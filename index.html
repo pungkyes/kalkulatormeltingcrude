@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crude Metal Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .calculator {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .resized-image {
+      width: 50%;
+      height: auto;
+      opacity: 1;
+    }
+
+    .result {
+      margin-top: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  
+  <div id="dateTime"></div>
+  <img src="Logo Antam.png" class="resized-image"> 
+  <h2>Crude Metal Calculator</h2>
+  <h2>SALAM ANTAM, BEST!!!!!</h2>
+  <h2>Kerja Ikhlas dan Cerdas, YES!!!!!</h2>
+  <p>Isilah kolom berikut sesuai kondisi komposisi crude metal yang akan diproses, gunakan tombol up/down atau ganti angka secara manual dengan format seperti pada angka default dan untuk tanda koma disesuaikan dengan setting keyboard HP masing masing untuk menghindari error</p>
+  <form id="metalCalculatorForm">
+    <label for="carbonCrude">Carbon Crude (%)</label>
+    <input type="number" id="carbonCrude" name="carbonCrude" step="0.1" min="0.01" max="4" placeholder="Masukkan nilai kadar carbon diantara 0.01 - 4, sesuaikan koma mengacu pada keyboard HP anda" value="1.3" required>
+
+    <label for="silikaCrude">Silika Crude (%)</label>
+    <input type="number" id="silikaCrude" name="silikaCrude" step="0.1" min="0.01" max="4" placeholder="Masukkan nilai kadar silika diantara 0.01 - 4, sesuaikan koma mengacu pada keyboard HP anda" value="1.2" required>
+
+    <label for="nikelCrude">Nikel Crude (%)</label>
+    <input type="number" id="nikelCrude" name="nikelCrude" step="0.5" min="15" max="25" placeholder="Masukkan nilai kadar nikel diantara 10 - 30" value="20" required>
+
+    <button type="button" onclick="calculateMeltingPoints()">Calculate</button>
+    <button type="button" onclick="resetForm()">Reset</button>
+    
+  </form>
+
+  <div class="result" id="resultContainer"></div>
+ 
+  <script>
+    function calculateMeltingPoints() {
+      const carbonCrude = parseFloat(document.getElementById('carbonCrude').value);
+      const silikaCrude = parseFloat(document.getElementById('silikaCrude').value);
+      const nikelCrude = parseFloat(document.getElementById('nikelCrude').value);
+
+      if (isNaN(carbonCrude) || isNaN(silikaCrude) || isNaN(nikelCrude) || (carbonCrude < 0.01 || carbonCrude > 4) || (silikaCrude < 0.01 || silikaCrude > 4) || (nikelCrude < 10 || nikelCrude > 30)) {
+        alert("Nilai di luar range yang diizinkan. Pastikan nilai carbonCrude antara 0.01 dan 4, silikaCrude antara 0.01 dan 4, dan nikelCrude antara 10 dan 30. Pastikan menggunakan tanda koma yang sesuai dengan keyboard anda, jika tanda . error maka gunakan tanda , ");
+        return;
+      }
+
+      const meltingPointCrudeMetal = Math.round(1536 - ((carbonCrude * 73) + (silikaCrude * 12) + (nikelCrude * 3.5)));
+      const meltingPointDesulfurization = Math.round(1536 - ((carbonCrude * 73) + (silikaCrude / 2 * 12) + (nikelCrude * 3.5)));
+      const tempMetalToCasting = Math.round(meltingPointDesulfurization + 60);
+
+      const resultContainer = document.getElementById('resultContainer');
+      resultContainer.innerHTML = `
+        <p align="left">-> Melting Point Crude Metal : ${meltingPointCrudeMetal.toLocaleString()} °C</p>
+        <p align="left">-> Melting Point Crude Metal Setelah Proses Desulfurisasi : ${meltingPointDesulfurization.toLocaleString()} °C</p>
+        <p align="left">-> Temperature Metal sebelum dikirimkan ke Casting mengacu pada komposisi Crude diatas : ${tempMetalToCasting.toLocaleString()} °C</p>
+        
+        <p align="left">Keterangan :</p>
+        <p align="left">1. Temperatur metal Crude Metal Saat Dikirimkan ke Casting harus lebih tinggi sebesar 60 derajat celcius dari Melting Point Crude Metal Pasca Desulfurisasi.</p>
+        <p align="left">2. Tujuan dari point nomor 1 adalah bahwa proses pencetakan di casting membutuhkan waktu 30 menit, dengan penurunan temperatur 2 derajat celcius per menit, maka supaya metal yang ada pada bagian bawah ladle saat proses pencetakan tidak membeku/mengendap maka temperatur metal Crude Metal Saat Dikirimkan ke Casting harus lebih tinggi 60 derajat celcius dari Melting Point Crude Metal Pasca Desulfurisasi.</p>
+        <p align="left">3. Tujuan lain dari point nomor 1 adalah untuk meminimalisir pengendapan di ladle yang membuat pekerjaan tambahan pengurasan ladle menggunakan metal, penyemprotan di runner casting yang memiliki potensi bahaya lain ketika ujung pipa oksigen tersumbat, mengurangi kerusakan ladle akibat castable tergerus tekanan oksigen saat aktifitas lancing pada dinding ladle yang terdapat metal yang mengendap saat proses pencetakan.</p>
+        <p align="left">Rumus yang digunakan : 1536 - ((carbonCrude * 73) + (silikaCrude * 12) + (nikelCrude * 3.5))</p>
+    
+	<br/>
+        <p>Created by : PES, Modified Date : 20240107</p>
+      `;
+    }
+
+    function resetForm() {
+      document.getElementById('carbonCrude').value = "";
+      document.getElementById('silikaCrude').value = "";
+      document.getElementById('nikelCrude').value = "";
+      document.getElementById('resultContainer').innerHTML = "";
+    }
+
+    // Display current date, day, and time in Bahasa Indonesia with month names and ":" as the time separator
+    function displayDateTime() {
+      const dateTimeContainer = document.getElementById('dateTime');
+      const currentDate = new Date();
+      const daysOfWeek = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      const formattedDayOfWeek = daysOfWeek[currentDate.getDay()];
+      const formattedMonth = months[currentDate.getMonth()];
+      const formattedDate = currentDate.getDate();
+      const formattedYear = currentDate.getFullYear();
+      const hours = currentDate.getHours().toString().padStart(2, '0');
+      const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+      const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+      dateTimeContainer.innerHTML = `<p align="left"><b>${formattedDayOfWeek}, ${formattedDate} ${formattedMonth} ${formattedYear}, ${hours}:${minutes}:${seconds} WITA</b></p>`;
+    }
+
+    // Call the displayDateTime function when the page loads
+    displayDateTime();
+  </script>
+
+</div>
+
+</body>
+</html>
